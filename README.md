@@ -32,7 +32,7 @@ A full-stack AI-powered interview coach that provides real-time transcription, c
 #### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone [<your-repo-url>](https://github.com/Rishi0620/InterviewHelper.git)
 cd InterviewHelper
 ```
 
@@ -41,11 +41,6 @@ cd InterviewHelper
 ```bash
 cd backend
 pip install -r requirements.txt
-```
-
-Create a `.env` file in `backend/` with:
-```
-OPENAI_API_KEY=your-openai-key
 ```
 
 - **Run FastAPI server**
