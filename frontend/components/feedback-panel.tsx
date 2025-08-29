@@ -51,10 +51,12 @@ export function FeedbackPanel({ feedback, onRequestFeedback, isEvaluating }: Fee
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center gap-2 text-white">
           <Brain className="w-5 h-5 text-blue-400" />
-          AI Evaluation
+          AI Feedback
         </CardTitle>
         <div className="flex items-center justify-between">
-          <span className="text-sm text-blue-200">Code + Speech Analysis</span>
+          <span className="text-sm text-blue-200">
+            {isEvaluating ? "Analyzing your solution..." : "Get insights on your approach"}
+          </span>
           <Button
             onClick={onRequestFeedback}
             variant="outline"
@@ -65,12 +67,12 @@ export function FeedbackPanel({ feedback, onRequestFeedback, isEvaluating }: Fee
             {isEvaluating ? (
               <>
                 <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                Evaluating...
+                Analyzing...
               </>
             ) : (
               <>
                 <Brain className="w-3 h-3 mr-1" />
-                Evaluate Now
+                Get Feedback
               </>
             )}
           </Button>
@@ -79,20 +81,22 @@ export function FeedbackPanel({ feedback, onRequestFeedback, isEvaluating }: Fee
       <CardContent className="p-0">
         <ScrollArea className="h-[400px]">
           {feedback.length === 0 ? (
-            <div className="p-4 text-center text-gray-400">
-              <TrendingUp className="w-8 h-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No evaluations yet</p>
-              <p className="text-xs mt-1">Code and speak to get AI analysis</p>
+            <div className="p-6 text-center text-gray-400">
+              <TrendingUp className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p className="text-sm font-medium mb-1">No feedback yet</p>
+              <p className="text-xs">Write some code and explain your approach to get AI insights</p>
             </div>
           ) : (
             <div className="space-y-4 p-4">
-              {feedback.map((item) => (
+              {feedback.map((item, index) => (
                 <div key={item.id} className="border border-blue-700 rounded-lg p-4 space-y-4 bg-slate-900">
                   {/* Header with Score */}
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-blue-300">{formatTime(item.timestamp)}</span>
+                    <span className="text-sm font-medium text-white">
+                      Feedback #{feedback.length - index}
+                    </span>
                     <Badge variant="outline" className={`${getScoreColor(item.score)} font-bold`}>
-                      {item.score}/10
+                      Score: {item.score}/10
                     </Badge>
                   </div>
 
@@ -166,23 +170,27 @@ export function FeedbackPanel({ feedback, onRequestFeedback, isEvaluating }: Fee
                     </div>
                   )}
 
-                  {/* Code Analysis */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Code className="w-4 h-4 text-blue-400" />
-                      <span className="text-sm font-medium text-white">Code Analysis</span>
+                  {/* Code Analysis - only show if meaningful */}
+                  {item.codeAnalysis && item.codeAnalysis !== "Code analysis completed" && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Code className="w-4 h-4 text-blue-400" />
+                        <span className="text-sm font-medium text-white">Code Review</span>
+                      </div>
+                      <p className="text-sm text-gray-300 pl-6">{item.codeAnalysis}</p>
                     </div>
-                    <p className="text-sm text-gray-300 pl-6">{item.codeAnalysis}</p>
-                  </div>
+                  )}
 
-                  {/* Speech Analysis */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <MessageCircle className="w-4 h-4 text-green-400" />
-                      <span className="text-sm font-medium text-white">Communication</span>
+                  {/* Speech Analysis - only show if meaningful */}
+                  {item.speechAnalysis && item.speechAnalysis !== "Speech analysis completed" && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <MessageCircle className="w-4 h-4 text-green-400" />
+                        <span className="text-sm font-medium text-white">Communication</span>
+                      </div>
+                      <p className="text-sm text-gray-300 pl-6">{item.speechAnalysis}</p>
                     </div>
-                    <p className="text-sm text-gray-300 pl-6">{item.speechAnalysis}</p>
-                  </div>
+                  )}
                 </div>
               ))}
             </div>

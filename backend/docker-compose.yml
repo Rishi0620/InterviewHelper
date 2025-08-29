@@ -1,18 +1,146 @@
+version: '3.8'
+
 services:
+  # FastAPI evaluation service
   fastapi:
-    build: ./backend/fastapi
+    build: 
+      context: ./backend/fastapi
+      target: production
+    container_name: interview-helper-api
     ports:
       - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+      - WORKERS=4
     env_file:
-      - .env          # Shared variables
-      - .env.fastapi  # Service-specific
+      - .env
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - interview-helper
+    depends_on:
+      - redis
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
+  # WebSocket transcription service
   websocket:
-    build: ./backend/websocket
+    build: 
+      context: ./backend/websocket
+      target: production
+    container_name: interview-helper-ws
     ports:
       - "8001:8001"
+    environment:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+      - WS_PORT=8001
+      - MAX_CLIENTS=20
     env_file:
-      - .env            # Shared variables
-      - .env.websocket  # Service-specific
+      - .env
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s=socket.socket(); s.settimeout(5); s.connect(('localhost', 8001)); s.close()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - interview-helper
+    # Note: Audio devices might need special handling in production
+    # devices:
+    #   - "/dev/snd:/dev/snd"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7.2-alpine
+    container_name: interview-helper-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-defaultpassword}
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - interview-helper
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # Nginx reverse proxy (optional, for production)
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: interview-helper-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - fastapi
+      - websocket
+    restart: unless-stopped
+    networks:
+      - interview-helper
+    profiles:
+      - production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Prometheus for monitoring (optional)
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: interview-helper-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - interview-helper
+    profiles:
+      - monitoring
+
+volumes:
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+
+networks:
+  interview-helper:
+    driver: bridge
+    name: interview-helper-network

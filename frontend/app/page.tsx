@@ -6,7 +6,7 @@ import { Button } from "@/frontend/components/ui/button"
 import { Badge } from "@/frontend/components/ui/badge"
 import { Separator } from "@/frontend/components/ui/separator"
 import { Textarea } from "@/frontend/components/ui/textarea"
-import { Play, Pause, RotateCcw, Mic, MicOff, Brain, Wifi, WifiOff, FileText, Search, AlertCircle } from "lucide-react"
+import { Play, Pause, RotateCcw, Mic, MicOff, Brain, Wifi, WifiOff, FileText, Search, AlertCircle, HelpCircle } from "lucide-react"
 import { CodeEditor } from "@/frontend/components/code-editor"
 import { TranscriptionPanel } from "@/frontend/components/transcription-panel"
 import { FeedbackPanel } from "@/frontend/components/feedback-panel"
@@ -1246,8 +1246,6 @@ const fetchLeetCodeProblems = async (): Promise<{ problems: LeetCodeProblem[]; s
   for (let i = 0; i < API_ENDPOINTS.length; i++) {
     const endpoint = API_ENDPOINTS[i]
     try {
-      console.log(`Trying API endpoint ${i + 1}/${API_ENDPOINTS.length}: ${endpoint}`)
-
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
 
@@ -1268,7 +1266,6 @@ const fetchLeetCodeProblems = async (): Promise<{ problems: LeetCodeProblem[]; s
       }
 
       const data = await response.json()
-      console.log(`Successfully fetched data from ${endpoint}`)
 
       // Handle different API response formats
       let problemsArray: any[] = []
@@ -1309,17 +1306,14 @@ const fetchLeetCodeProblems = async (): Promise<{ problems: LeetCodeProblem[]; s
         .sort((a, b) => a.id - b.id)
 
       if (problems.length > 0) {
-        console.log(`Successfully processed ${problems.length} problems from ${endpoint}`)
         return { problems, source: endpoint }
       }
     } catch (error) {
-      console.warn(`Failed to fetch from ${endpoint}:`, error)
       continue
     }
   }
 
   // If all APIs fail, use fallback
-  console.log("All API endpoints failed, using fallback dataset")
   return { problems: FALLBACK_PROBLEMS, source: "fallback" }
 }
 
@@ -1533,9 +1527,7 @@ export default function InterviewHelper() {
         const { problems: fetchedProblems, source } = await fetchLeetCodeProblems()
         setProblems(fetchedProblems)
         setProblemsSource(source)
-        console.log(`Loaded ${fetchedProblems.length} problems from ${source}`)
       } catch (error) {
-        console.error("Error loading problems:", error)
         // Use fallback as last resort
         setProblems(FALLBACK_PROBLEMS)
         setProblemsSource("fallback")
@@ -1753,14 +1745,44 @@ export default function InterviewHelper() {
               <Brain className="w-10 h-10 text-blue-400" />
               AI Interview Coach
             </h1>
-            <p className="text-blue-200 text-lg">Select a question to start your mock interview</p>
+            <p className="text-blue-200 text-lg mb-2">Practice coding interviews with AI feedback</p>
+            <p className="text-blue-300 text-sm">Choose a problem, code your solution, and explain your thinking out loud</p>
           </div>
+
+          {/* How it works */}
+          <Card className="bg-slate-800 border-blue-800 shadow-xl mb-6">
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-white font-bold">1</span>
+                  </div>
+                  <h3 className="font-medium text-white mb-1">Choose Problem</h3>
+                  <p className="text-sm text-blue-200">Select from LeetCode problems or add your own</p>
+                </div>
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-white font-bold">2</span>
+                  </div>
+                  <h3 className="font-medium text-white mb-1">Code & Explain</h3>
+                  <p className="text-sm text-blue-200">Write your solution while explaining your approach</p>
+                </div>
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-white font-bold">3</span>
+                  </div>
+                  <h3 className="font-medium text-white mb-1">Get Feedback</h3>
+                  <p className="text-sm text-blue-200">Receive AI insights on your code and communication</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           <Card className="bg-slate-800 border-blue-800 shadow-2xl">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
                 <FileText className="w-5 h-5 text-blue-400" />
-                Question Selection
+                Choose Your Challenge
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -1868,18 +1890,7 @@ export default function InterviewHelper() {
                         <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
                         <span>Loading problems...</span>
                       </div>
-                    ) : (
-                      <div className="flex items-center gap-2 text-xs text-gray-400">
-                        {problemsSource === "fallback" ? (
-                          <div className="flex items-center gap-1">
-                            <AlertCircle className="w-3 h-3 text-yellow-400" />
-                            <span>Using offline dataset</span>
-                          </div>
-                        ) : (
-                          <span>Loaded from API</span>
-                        )}
-                      </div>
-                    )}
+                    ) : null}
                   </div>
 
                   {/* Problems List */}
@@ -1892,8 +1903,8 @@ export default function InterviewHelper() {
                     ) : filteredProblems.length === 0 ? (
                       <div className="text-center py-8 text-gray-400">
                         <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                        <p>No problems found matching your criteria</p>
-                        <p className="text-sm mt-1">Try adjusting your filters</p>
+                        <p>No problems match your search</p>
+                        <p className="text-sm mt-1">Try different filters or search terms</p>
                       </div>
                     ) : (
                       filteredProblems.map((problem) => (
@@ -2007,28 +2018,19 @@ export default function InterviewHelper() {
                 </Select>
               </div>
 
-              {/* Connection Status */}
-              <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      variant={apiServerConnected ? "default" : "outline"}
-                      className={`gap-1 ${apiServerConnected ? "bg-green-600" : "border-gray-600 text-gray-400"}`}
-                    >
-                      {apiServerConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
-                      Evaluation API
-                    </Badge>
+              {/* System Status */}
+              <div className="flex items-center justify-center p-3 bg-slate-700 rounded-lg">
+                {(apiServerConnected && isConnected) ? (
+                  <div className="flex items-center gap-2 text-green-400">
+                    <Wifi className="w-4 h-4" />
+                    <span className="text-sm font-medium">All systems ready</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      variant={isConnected ? "default" : "outline"}
-                      className={`gap-1 ${isConnected ? "bg-green-600" : "border-gray-600 text-gray-400"}`}
-                    >
-                      {isConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
-                      Transcription
-                    </Badge>
+                ) : (
+                  <div className="flex items-center gap-2 text-yellow-400">
+                    <WifiOff className="w-4 h-4" />
+                    <span className="text-sm font-medium">Setting up services...</span>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Start Button */}
@@ -2040,7 +2042,7 @@ export default function InterviewHelper() {
                 }
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg"
               >
-                Start Mock Interview
+                Start Interview Session
               </Button>
             </CardContent>
           </Card>
@@ -2063,32 +2065,24 @@ export default function InterviewHelper() {
               <p className="text-blue-200 mt-1">{getCurrentQuestion()}</p>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3">
-                <div className="text-right text-sm">
-                  <div className="font-medium text-white">Services</div>
-                  <div className="text-xs text-blue-300">Auto-connecting</div>
-                </div>
-                <div className="flex gap-2">
-                  <Badge
-                    variant={apiServerConnected ? "default" : "outline"}
-                    className={`gap-1.5 ${apiServerConnected ? "bg-green-600" : "border-gray-600 text-gray-400"}`}
-                  >
-                    {apiServerConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
-                    API
+              {/* Connection status - simplified for users */}
+              <div className="flex items-center gap-2">
+                {(apiServerConnected && isConnected) ? (
+                  <Badge variant="default" className="bg-green-600 gap-1.5">
+                    <Wifi className="w-3 h-3" />
+                    Connected
                   </Badge>
-                  <Badge
-                    variant={isConnected ? "default" : "outline"}
-                    className={`gap-1.5 ${isConnected ? "bg-green-600" : "border-gray-600 text-gray-400"}`}
-                  >
-                    {isConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
-                    Voice
+                ) : (
+                  <Badge variant="outline" className="border-yellow-500 text-yellow-400 gap-1.5">
+                    <WifiOff className="w-3 h-3" />
+                    Connecting...
                   </Badge>
-                </div>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Controls */}
+          {/* Session Controls */}
           <div className="flex items-center gap-3 flex-wrap">
             <Button
               onClick={togglePause}
@@ -2097,7 +2091,7 @@ export default function InterviewHelper() {
               className={`gap-2 ${isPaused ? "bg-blue-600 hover:bg-blue-700" : "border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-black"}`}
             >
               {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-              {isPaused ? "Resume" : "Pause"} Session
+              {isPaused ? "Resume" : "Pause"}
             </Button>
 
             <Button
@@ -2108,7 +2102,7 @@ export default function InterviewHelper() {
               className="gap-2 border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-black disabled:border-gray-600 disabled:text-gray-600"
             >
               <Brain className="w-4 h-4" />
-              {isEvaluating ? "Evaluating..." : "Get AI Feedback"}
+              {isEvaluating ? "Analyzing..." : "Get Feedback"}
             </Button>
 
             <Button
@@ -2118,28 +2112,41 @@ export default function InterviewHelper() {
               className="gap-2 border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-black"
             >
               <RotateCcw className="w-4 h-4" />
-              New Session
+              New Problem
             </Button>
 
             <Separator orientation="vertical" className="h-6 bg-blue-800" />
 
-            <Badge variant={isPaused ? "destructive" : "default"} className={isPaused ? "bg-red-600" : "bg-blue-600"}>
-              {isPaused ? "Paused" : "Active"}
-            </Badge>
-
-            <Badge
-              variant={isTranscribing ? "default" : "outline"}
-              className={`gap-1 ${isTranscribing ? "bg-green-600" : "border-gray-600 text-gray-400"}`}
-            >
-              {isTranscribing ? <Mic className="w-3 h-3" /> : <MicOff className="w-3 h-3" />}
-              {isTranscribing ? "Listening" : "Silent"}
-            </Badge>
-
-            <Badge variant="outline" className="border-blue-400 text-blue-400">
-              {feedback.length} evaluations
-            </Badge>
+            {/* Session Status */}
+            <div className="flex items-center gap-2">
+              <Badge variant={isTranscribing ? "default" : "outline"} className={`gap-1 ${isTranscribing ? "bg-green-600" : "border-gray-600 text-gray-400"}`}>
+                {isTranscribing ? <Mic className="w-3 h-3" /> : <MicOff className="w-3 h-3" />}
+                {isTranscribing ? "Recording" : "Ready"}
+              </Badge>
+              
+              {feedback.length > 0 && (
+                <Badge variant="outline" className="border-blue-400 text-blue-400">
+                  {feedback.length} feedback{feedback.length !== 1 ? 's' : ''}
+                </Badge>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* Helper tip for new users */}
+        {(!transcription || transcription.length === 0) && feedback.length === 0 && (
+          <div className="mb-4 p-4 bg-blue-900/30 border border-blue-700/50 rounded-lg">
+            <div className="flex items-start gap-3">
+              <HelpCircle className="w-5 h-5 text-blue-400 mt-0.5" />
+              <div>
+                <p className="text-blue-200 text-sm font-medium mb-1">💡 Getting Started</p>
+                <p className="text-blue-300 text-sm">
+                  Start by explaining your approach out loud as you code. The AI will analyze both your solution and communication skills to provide helpful feedback.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -2152,7 +2159,7 @@ export default function InterviewHelper() {
                     <div className="w-3 h-3 rounded-full bg-red-500"></div>
                     <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                     <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                    <span className="ml-2 text-sm font-medium text-blue-200">solution</span>
+                    <span className="ml-2 text-sm font-medium text-blue-200">{selectedProblem?.title || customQuestion?.substring(0, 30) || "Solution"}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Select value={language} onValueChange={handleLanguageChange}>

@@ -1,12 +1,23 @@
 {
-  "name": "my-v0-project",
-  "version": "0.1.0",
+  "name": "ai-interview-coach",
+  "version": "1.0.0",
   "private": true,
+  "description": "AI-powered interview coaching platform with real-time transcription and code evaluation",
+  "keywords": ["interview", "ai", "coaching", "transcription", "code-evaluation"],
   "scripts": {
-    "build": "next build",
     "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "next lint",
-    "start": "next start"
+    "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "analyze": "cross-env ANALYZE=true next build",
+    "export": "next export",
+    "docker:build": "docker build -t ai-interview-coach .",
+    "docker:run": "docker run -p 3000:3000 ai-interview-coach"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
