@@ -63,7 +63,6 @@ A production-ready AI-powered interview coaching platform with real-time transcr
 
 ### 1. Clone the Repository
 ```bash
-git clone <repository-url>
 cd InterviewHelper
 ```
 
@@ -126,7 +125,6 @@ cd backend/websocket
 python server.py
 ```
 
-### Frontend Development
 ```bash
 cd frontend
 
