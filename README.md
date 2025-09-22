@@ -1,8 +1,8 @@
 # AI Interview Coach
 
-A production-ready AI-powered interview coaching platform with real-time transcription and code evaluation capabilities.
+An AI-powered interview coaching platform with real-time transcription and code evaluation capabilities.
 
-## 🚀 Features
+## Features
 
 - **Real-time Audio Transcription**: WebSocket-based transcription using Whisper
 - **AI Code Evaluation**: Intelligent code review using OpenAI GPT models
@@ -10,7 +10,7 @@ A production-ready AI-powered interview coaching platform with real-time transcr
 - **Modern UI**: Beautiful React/Next.js interface with Tailwind CSS
 - **Production Ready**: Full Docker containerization, monitoring, and security
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -28,7 +28,7 @@ A production-ready AI-powered interview coaching platform with real-time transcr
                    └─────────────────┘
 ```
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 ### Backend
 - **FastAPI**: Modern Python web framework for the API
@@ -52,14 +52,14 @@ A production-ready AI-powered interview coaching platform with real-time transcr
 - **Prometheus**: Metrics and monitoring
 - **Multi-stage builds**: Optimized production images
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Docker and Docker Compose
 - OpenAI API key
 - Node.js 18+ (for local development)
 - Python 3.11+ (for local development)
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Clone the Repository
 ```bash
@@ -69,7 +69,7 @@ cd InterviewHelper
 ### 2. Environment Setup
 ```bash
 # Copy environment template
-cp .env.example .env
+cp .env
 
 # Edit .env with your configuration
 nano .env
@@ -100,7 +100,7 @@ docker-compose ps
 - **Health Check**: http://localhost:8000/health
 - **Monitoring**: http://localhost:9090 (Prometheus)
 
-## 🔧 Development Setup
+## Development Setup
 
 ### Backend Development
 ```bash
@@ -139,7 +139,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-## 📊 Monitoring and Observability
+## Monitoring and Observability
 
 ### Health Checks
 ```bash
@@ -166,7 +166,7 @@ Access Prometheus at http://localhost:9090 to view:
 - System resource usage
 - Custom application metrics
 
-## 🔒 Security Features
+## Security Features
 
 ### Application Security
 - **Input Sanitization**: XSS and injection prevention
@@ -187,7 +187,7 @@ Access Prometheus at http://localhost:9090 to view:
 - **Data Sanitization**: Input cleaning and validation
 - **Audit Logging**: Request and response logging
 
-## 🚢 Production Deployment
+## Production Deployment
 
 ### Docker Production
 ```bash
@@ -239,7 +239,7 @@ kubectl get pods -n interview-coach
 kubectl get services -n interview-coach
 ```
 
-## 🧪 Testing
+## Testing
 
 ### Backend Tests
 ```bash
@@ -263,7 +263,7 @@ docker-compose -f docker-compose.test.yml up -d
 ./scripts/run-integration-tests.sh
 ```
 
-## 📈 Performance Optimization
+## Performance Optimization
 
 ### Backend Optimizations
 - **Async Processing**: FastAPI with async/await
@@ -279,7 +279,7 @@ docker-compose -f docker-compose.test.yml up -d
 - **Static Generation**: Pre-rendered pages where possible
 - **Compression**: Gzip and Brotli compression
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -322,7 +322,7 @@ docker-compose logs fastapi | grep '"level":"ERROR"'
 docker-compose logs -f --tail=100
 ```
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
@@ -337,31 +337,14 @@ docker-compose logs -f --tail=100
 - Update documentation
 - Ensure Docker builds pass
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - OpenAI for the GPT API
 - Faster-Whisper for speech recognition
 - Next.js team for the excellent framework
 - FastAPI for the modern Python API framework
 - All open source contributors
-
-## 📞 Support
-
-- **Documentation**: [docs/](docs/)
-- **Issues**: Create a GitHub issue
-- **Discussions**: Use GitHub Discussions
-- **Security**: Contact security@yourcompany.com
-
----
-
-## 📚 Additional Documentation
-
-- [API Documentation](docs/api.md)
-- [Architecture Guide](docs/architecture.md)
-- [Deployment Guide](docs/deployment.md)
-- [Security Guide](docs/security.md)
-- [Development Guide](docs/development.md)
